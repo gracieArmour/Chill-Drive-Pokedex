@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Homepage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .floating {
+        animation-name: floating;
+        animation-duration: 3s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+        margin-left: 30px;
+        margin-top: 5px;
+      }
+      body {
+        color: rgb(94, 9, 101);
+        background-color: rgba(164, 20, 177, 0.24);
+        opacity: 1;
+        background-image: radial-gradient(
+          rgba(164, 20, 177, 0.176) 0.9500000000000001px,
+          rgba(253, 236, 255, 0.89) 0.9500000000000001px
+        );
+        background-size: 19px 19px;
+        font-family: "Varela Round", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+      li {
+        display: inline;
+        margin-right: 10px;
+      }
+      li a {
+        text-decoration: underline;
+        color: rgb(164, 20, 177);
+      }
+      #HeroSection {
+        text-align: center;
+        margin-top: 25px;
+        width: 25%;
+      }
+      .form-group,
+      fieldset {
+        text-align: left;
+      }
+      input {
+        border: none;
+        border: 1.5px solid rgba(164, 20, 177, 0.24);
+        border-radius: 15px;
+        background: none;
+      }
+      .form-group {
+        margin-top: 10px;
+      }
+      form {
+        height: 300px;
+        overflow-y: scroll;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(164, 20, 177, 0.24) transparent;
+      }
+      #pokemonData {
+        flex-grow: 1;
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 50px;
+      }
+      .pokemon {
+        border: 1px solid rgba(164, 20, 177, 0.24);
+        border-radius: 15px;
+        padding: 10px;
+        margin: 5px;
+        height: auto;
+        word-wrap: break-word;
+      }
+      .container {
+        display: flex;
+        flex-direction: row;
+      }
+      .pokemon h2 {
+        margin: 0;
+        font-size: 24px;
+
+        font-weight: bold; /* Make the Pokémon name bold */
+      }
+      .pokemon p:nth-child(even) {
+        background-color: rgba(
+          164,
+          20,
+          177,
+          0.24
+        ); /* Slightly darker background color for even paragraphs */
+
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="HeroSection">
+        <h1>Pokemon</h1>
+        <p>
+          Enter a Pokemon by completing the below form, or edit an existing
+          Pokemon by clicking on the Pokemon's name.
+        </p>
+
+        <ul>
+          <li>
+            <a href="index.html">Index</a>
+          </li>
+          <li>
+            <a href="moves.html">Moves</a>
+          </li>
+          <li>
+            <a href="types.html">Types</a>
+          </li>
+          <li>
+            <a href="abilities.html">Abilities</a>
+          </li>
+          <li>
+            <a href="categories.html">Categories</a>
+          </li>
+          <li>
+            <a href="ranges.html">Ranges</a>
+          </li>
+        </ul>
+        <br />
+        <form class="form-horizontal">
+          <fieldset>
+            <!-- Form Name -->
+            <legend>Enter Pokemon</legend>
+
+            <!-- Text input-->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonname"
+                >Name</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="pokemonname"
+                  name="pokemonname"
+                  type="text"
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonspecies"
+                >Species</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="pokemonspecies"
+                  name="pokemonspecies"
+                  type="text"
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+
+            <!-- Select Basic -->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonintrogen"
+                >Intro Generation</label
+              >
+              <div class="col-md-4">
+                <select
+                  id="pokemonintrogen"
+                  name="pokemonintrogen"
+                  class="form-control"
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Select Basic -->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonlatestgen"
+                >Latest Generation</label
+              >
+              <div class="col-md-4">
+                <select
+                  id="pokemonlatestgen"
+                  name="pokemonlatestgen"
+                  class="form-control"
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseHP">Base HP</label>
+              <div class="col-md-4">
+                <input
+                  id="baseHP"
+                  name="baseHP"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseAttack"
+                >Base Attack</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="baseAttack"
+                  name="baseAttack"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseDefense"
+                >Base Defense</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="baseDefense"
+                  name="baseDefense"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseSpAttack"
+                >Base Sp. Attack</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="baseSpAttack"
+                  name="baseSpAttack"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseSpDefense"
+                >Base Sp. Defense</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="baseSpDefense"
+                  name="baseSpDefense"
+                  type="baseSpDefense"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="baseSpeed"
+                >Base Speed</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="baseSpeed"
+                  name="baseSpeed"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonWeight"
+                >Weight</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="pokemonWeight"
+                  name="pokemonWeight"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="pokemonHeight"
+                >Height</label
+              >
+              <div class="col-md-4">
+                <input
+                  id="pokemonHeight"
+                  name="pokemonHeight"
+                  type="text"
+                  placeholder=""
+                  class="form-control input-md"
+                  required=""
+                />
+              </div>
+            </div>
+            <br />
+            <button type="button" onclick="">Enter</button>
+          </fieldset>
+        </form>
+      </div>
+      <div id="pokemonData">
+        <div class="pokemon">
+          <h2>Charmander</h2>
+          <p>Species: Lizard Pokemon</p>
+          <p>Intro Generation: 1</p>
+          <p>Latest Generation: 8</p>
+          <p>Base HP: 39</p>
+          <p>Base Attack: 52</p>
+          <p>Base Defense: 43</p>
+          <p>Base Sp. Attack: 60</p>
+          <p>Base Sp. Defense: 50</p>
+          <p>Base Speed: 65</p>
+          <p>Base Friendship: 50</p>
+          <p>Weight: 18.7 lbs</p>
+          <p>Height: 2'0"</p>
+        </div>
+        <div class="pokemon">
+          <h2>Pikachu</h2>
+          <p>Species: Mouse Pokemon</p>
+          <p>Intro Generation: 1</p>
+          <p>Latest Generation: 8</p>
+          <p>Base HP: 35</p>
+          <p>Base Attack: 55</p>
+          <p>Base Defense: 40</p>
+          <p>Base Sp. Attack: 50</p>
+          <p>Base Sp. Defense: 50</p>
+          <p>Base Speed: 90</p>
+          <p>Base Friendship: 50</p>
+          <p>Weight: 13.2 lbs</p>
+          <p>Height: 1'4"</p>
+        </div>
+
+        <div class="pokemon">
+          <h2>Caterpie</h2>
+          <p>Species: Worm Pokemon</p>
+          <p>Intro Generation: 1</p>
+          <p>Latest Generation: 8</p>
+          <p>Base HP: 45</p>
+          <p>Base Attack: 30</p>
+          <p>Base Defense: 35</p>
+          <p>Base Sp. Attack: 20</p>
+          <p>Base Sp. Defense: 20</p>
+          <p>Base Speed: 45</p>
+          <p>Base Friendship: 50</p>
+          <p>Weight: 6.4 lbs</p>
+          <p>Height: 1'0"</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
