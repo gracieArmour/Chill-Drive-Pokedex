@@ -9,49 +9,23 @@
       rel="stylesheet"
     />
     <style>
-      .floating {
-        animation-name: floating;
-        animation-duration: 3s;
-        animation-iteration-count: infinite;
-        animation-timing-function: ease-in-out;
-        margin-left: 30px;
-        margin-top: 5px;
-      }
-      .floating img {
-        transform: scale(2);
-        position: fixed;
-        top: 15vh;
-        right: 10vw;
-      }
-      @keyframes floating {
-        0% {
-          transform: translate(0, 0px);
-        }
-
-        50% {
-          transform: translate(0, 15px);
-        }
-
-        100% {
-          transform: translate(0, -0px);
-        }
-      }
       body {
         color: rgb(94, 9, 101);
         background-color: rgba(164, 20, 177, 0.24);
-        opacity: 1;
         background-image: radial-gradient(
-          rgba(164, 20, 177, 0.176) 0.9500000000000001px,
-          rgba(253, 236, 255, 0.89) 0.9500000000000001px
+          rgba(164, 20, 177, 0.176) 0.95px,
+          rgba(253, 236, 255, 0.89) 0.95px
         );
         background-size: 19px 19px;
         font-family: "Varela Round", sans-serif;
-        font-weight: 400;
-        font-style: normal;
+        margin: 0;
+        padding: 0;
       }
       ul {
         margin: 0;
         padding: 0;
+        list-style: none;
+        text-align: center;
       }
       li {
         display: inline;
@@ -63,43 +37,41 @@
       }
       #HeroSection {
         text-align: center;
-        margin-top: 150px;
-        margin-left: auto;
-        margin-right: auto;
-        width: 25%;
+        margin: 150px auto 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 50%;
+      }
+      #HeroSection > div {
+        flex: 1;
+      }
+      #genesect {
+        transform: scale(2);
       }
     </style>
   </head>
   <body>
     <div id="HeroSection">
-      <h1>Chill Drive Pokedex</h1>
-      <p>
-        Welcome to the Chill Drive Pokedex! Here you can find information on
-        Pokemon, moves, types, and abilities.
-      </p>
-      <div class="floating">
-        <img src="genesect.gif" />
+      <div id="col1">
+        <h1>Chill Drive Pokedex</h1>
+        <p>
+          Welcome to the Chill Drive Pokedex! Here you can find information on
+          Pokemon, moves, types, and abilities.
+        </p>
+        <ul>
+          <li>Home</li>
+          <li><a href="pokemon.html">Pokemon</a></li>
+          <li><a href="moves.html">Moves</a></li>
+          <li><a href="types.html">Types</a></li>
+          <li><a href="abilities.html">Abilities</a></li>
+          <li><a href="categories.html">Categories</a></li>
+          <li><a href="ranges.html">Ranges</a></li>
+        </ul>
       </div>
-      <ul>
-        <li>
-          <a href="pokemon.html">Pokemon</a>
-        </li>
-        <li>
-          <a href="moves.html">Moves</a>
-        </li>
-        <li>
-          <a href="types.html">Types</a>
-        </li>
-        <li>
-          <a href="abilities.html">Abilities</a>
-        </li>
-        <li>
-          <a href="categories.html">Categories</a>
-        </li>
-        <li>
-          <a href="ranges.html">Ranges</a>
-        </li>
-      </ul>
+      <div id="col2">
+        <img id="genesect" src="genesect.gif" alt="Floating Genesect" />
+      </div>
     </div>
   </body>
 </html>
