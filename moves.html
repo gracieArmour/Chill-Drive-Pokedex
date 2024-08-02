@@ -104,7 +104,7 @@
         <form class="form-horizontal">
           <fieldset>
             <!-- Form Name -->
-            <legend>Enter Move</legend>
+            <legend>Enter or search Move</legend>
 
             <!-- Text input-->
             <div class="form-group">
@@ -207,6 +207,7 @@
 
             <br />
             <button type="button" onclick="">Enter</button>
+            <button type="button" onclick="">Search</button>
           </fieldset>
         </form>
       </div>
@@ -214,11 +215,12 @@
       <table id="movesData">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Move Name</th>
             <th>Description</th>
-            <th>Type ID</th>
-            <th>Category ID</th>
-            <th>Range ID</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Range</th>
             <th>PP</th>
             <th>Power</th>
             <th>Accuracy</th>
@@ -227,70 +229,60 @@
         </thead>
         <tbody>
           <tr>
-            <td>Tackle</td>
+            <td>❌ 1</td>
+            <td>✍ Tackle</td>
             <td>
               A physical attack in which the user charges and slams into the
               target with its whole body.
             </td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
+            <td>Normal</td>
+            <td>Physical</td>
+            <td>Normal</td>
             <td>35</td>
             <td>40</td>
             <td>100</td>
             <td>0</td>
           </tr>
           <tr>
-            <td>Tackle</td>
-            <td>
-              A physical attack in which the user charges and slams into the
-              target with its whole body.
-            </td>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td>35</td>
-            <td>40</td>
-            <td>100</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Thunder Shock</td>
+            <td>❌ 2</td>
+            <td>✍ Thunder Shock</td>
             <td>
               A jolt of electricity crashes down on the target to inflict
               damage. This may also leave the target with paralysis.
             </td>
-            <td>1</td>
-            <td>2</td>
-            <td>1</td>
+            <td>Electric</td>
+            <td>Special</td>
+            <td>Normal</td>
             <td>30</td>
             <td>40</td>
             <td>100</td>
             <td>0</td>
           </tr>
           <tr>
-            <td>Flame Thrower</td>
+            <td>❌ 3</td>
+            <td>✍ Flame Thrower</td>
             <td>
               The target is scorched with an intense blast of fire. This may
               also leave the target with a burn.
             </td>
-            <td>2</td>
-            <td>2</td>
-            <td>1</td>
+            <td>Fire</td>
+            <td>Special</td>
+            <td>Normal</td>
             <td>15</td>
             <td>90</td>
             <td>100</td>
             <td>0</td>
           </tr>
           <tr>
-            <td>String Shot</td>
+            <td>❌ 4</td>
+            <td>✍ String Shot</td>
             <td>
               The opposing Pokémon are bound with silk blown from the user's
               mouth that harshly lowers the Speed stat.
             </td>
-            <td>3</td>
-            <td>3</td>
-            <td>1</td>
+            <td>Bug</td>
+            <td>Status</td>
+            <td>Normal</td>
             <td>40</td>
             <td>0</td>
             <td>95</td>
