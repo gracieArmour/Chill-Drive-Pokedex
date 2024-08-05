@@ -1,0 +1,76 @@
+body {
+    background-color: rgba(164, 20, 177, 0.24);
+    background-image: radial-gradient(
+        rgba(164, 20, 177, 0.176) 0.95px,
+        rgba(253, 236, 255, 0.89) 0.95px
+    );
+    background-size: 19px 19px;
+    font-family: "Varela Round", sans-serif;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    display: inline;
+    margin-right: 10px;
+}
+
+li a {
+    text-decoration: underline;
+    color: #a414b1;
+}
+
+form {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+input,select {
+    flex: 1;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+button {
+    align-self: flex-start;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td,th {
+    padding: 8px;
+    text-align: left;
+    border-top: 1px solid rgba(164, 20, 177, 0.24);
+    border-bottom: 1px solid rgba(164, 20, 177, 0.24);
+}
+
+th {
+    background-color: rgba(164, 20, 177, 0.24);
+}
+
+fieldset {
+    display: flex;
+    width: 100vw;
+    border: none;
+    padding: 0;
+}
+
+ul {
+    margin-bottom: 25px;
+}
