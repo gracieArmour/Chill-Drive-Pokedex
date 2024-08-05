@@ -3,10 +3,13 @@ require('dotenv').config();
 const express = require('express');
 const exhandle = require('express-handlebars');
 const mysql = require('mysql');
-var { dbpool, queryPromise } = require('./db-functions')  // Import the database connector
 const fs = require('fs');
 const path = require('path');
-// const cfUtils = require('./public/crossFileUtils.js');
+var { queryPromise } = require('./db-functions')  // Import the database connector
+var { capFirst,
+    foreignKeyTable,
+    prettyNameTable,
+    entitiesList } = require('./utility-functions')  // Import the database connector
 
 // collect environmentally stored variables
 var port = process.env.PORT;
@@ -25,46 +28,6 @@ app.engine('handlebars', exhandle.engine({
     defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
-
-/*
-Citation for string capitalizing helper function below
-Date: 8/3/2024
-Copied from stackoverflow post
-URL: https://stackoverflow.com/a/1026087
-*/
-function capFirst(str) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-// foreign key to table name dictionary
-const foreignKeyTable = {
-    pokemonId: 'Pokemon',
-    abilityId: 'Abilities',
-    typeId: 'Types',
-    categoryId: 'Categories',
-    rangeId: 'Ranges',
-    moveId: 'Moves'
-};
-
-const prettyNameTable = {
-    pokemonId: 'Pokemon',
-    abilityId: 'Ability',
-    typeId: 'Type',
-    categoryId: 'Category',
-    rangeId: 'Range',
-    moveId: 'Move'
-};
-
-// get list of current entity pages
-var entitiesList = fs.readdirSync(path.join(__dirname,'views','entities'));
-entitiesList.forEach((name,index) => {
-    let filename = name.replace(".handlebars","");
-
-    entitiesList[index] = {
-        file: filename,
-        pretty: capFirst(filename)
-    }
-});
 
 // context class for providing page routing
 class contextBlock {
@@ -90,6 +53,7 @@ class contextBlock {
         return this;
     }
 }
+
 
 /*
 GET ROUTES
