@@ -1,8 +1,30 @@
-<div id="HeroSection">
-    <div id="col1">
-        {{> pageInfo}}
-    </div>
-    <div id="col2">
-        <img id="genesect" src="genesect.gif" alt="Floating Genesect" />
-    </div>
+<head>
+    <style>
+        body {
+            color: rgb(94, 9, 101);
+            margin: 0;
+            padding: 0;
+        }
+        #HeroSection {
+        text-align: center;
+        margin: 150px auto 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 50%;
+      }
+      #HeroSection > div {
+        flex: 1;
+      }
+      #genesect {
+        transform: scale(2);
+      }
+    </style>
+</head>
+
+<div id="col1">
+    {{> pageInfo this}}
+</div>
+<div id="col2">
+    <img id="genesect" src="genesect.gif" alt="Floating Genesect" />
 </div>

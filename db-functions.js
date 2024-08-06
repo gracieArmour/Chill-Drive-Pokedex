@@ -22,7 +22,7 @@ var dbpool = mysql.createPool({
 
 function queryPromise(queryStr,arr) {
     return new Promise((resolve,reject) => {
-        pool.query(queryStr, arr, (err,rows) => {
+        dbpool.query(queryStr, arr, (err,rows) => {
             if (err) {
                 return reject(err);
             }

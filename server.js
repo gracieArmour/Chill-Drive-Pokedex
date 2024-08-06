@@ -3,10 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const exhandle = require('express-handlebars');
 const mysql = require('mysql');
-const fs = require('fs');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
-var { foreignKeyTable,
+var { entitiesList,
+    foreignKeyTable,
     capFirst,
     toPretty } = require('./utility-functions')  // Import the database connector
 
@@ -33,17 +33,21 @@ class contextBlock {
     pageTitle;
     entityName;
     pageDescription;
-    entities = foreignKeyTable.values();
+    entities = entitiesList.map((entity) => ({file: entity, pretty: toPretty(entity)}));
     pageContext = {
+        columns: [],
         tableEntries: []
     }
 
     constructor(entity) {
+        console.log(this.entities);
         if (entity) {
+            this.layout = 'entity';
             this.pageTitle = capFirst(entity);
             this.entityName = entity;
             this.pageDescription = `Enter a ${this.pageTitle} by completing the below form, or edit an existing ${this.pageTitle} by clicking on the ${this.pageTitle}'s name.`;
         }else {
+            this.layout = 'main';
             this.pageDescription = 'Welcome to the Chill Drive Pokedex! Here you can find information on Pokemon, moves, types, and abilities.';
         }
     }
@@ -70,24 +74,27 @@ app.get('/entity/:ent', (req, res, next) => {
     let entity = req.params.ent.toLowerCase();
 
     // skip to 404 if invalid page
-    if (!foreignKeyTable.values().includes(capFirst(entity))) return next();
+    if (!entitiesList.includes(entity)) return next();
 
     let responseContext = new contextBlock(entity);
 
     // get table entries from database
-    queryPromise('SELECT * FROM ?', [entity])
+    queryPromise('SELECT * FROM ??', [capFirst(entity)])
     .catch(next)
     .then((rows) => {
         // iterate through rows returned
         rows.forEach((row) => {
+            // make list of attributes
+            responseContext.pageContext.columns = Object.keys(row);
+
             let entry = {};
 
             // add attributes to entry
-            row.keys().forEach((key) => {
+            Object.keys(row).forEach((key) => {
                 let value;
 
                 // if foreign key attribute
-                if (foreignKeyTable.keys().includes(row[key])) {
+                if (Object.keys(foreignKeyTable).includes(row[key])) {
                     // go get foreign key name value from referenced table
                     queryPromise('SELECT name FROM ? WHERE id=?', [foreignKeyTable[key], row[key]])
                     .then((fkNames) => {
@@ -98,15 +105,15 @@ app.get('/entity/:ent', (req, res, next) => {
                 }
 
                 // add attributes and values to entry
-                entry[toPretty(key)] = value;
+                entry[key] = value;
             });
 
             // add entry to table array
-            responseContext.tableEntries.push(entry);
+            responseContext.pageContext.tableEntries.push(entry);
         });
 
         // send page with data to frontend client
-        res.status(200).render('entity', responseContext.rawify());
+        res.status(200).render(path.join('entities',entity), responseContext.rawify());
     })
 });
 
@@ -115,13 +122,32 @@ app.get('/entity/:ent', (req, res, next) => {
 POST REPLIES
 */
 
+// unfinished post to handle database queries
+app.post('/database', (req,res,next) => {
+    let entity = req.body.entity;
+    let command = req.body.command;
+    let data = req.body.data;
+    let id = req.body.id;
+
+    switch (command) {
+        case 'SELECT':
+            queryPromise('SELECT * FROM ?? WHERE name=?', [entity,data.name]);
+            break;
+        case 'CREATE':
+            break;
+        case 'UPDATE':
+            break;
+        case 'DELETE':
+            break;
+    }
+});
 
 
 // 404 ERROR PAGE ROUTING
-app.use((req, res) => {res.status(404).render('404', new contextBlock(req,'Page Not Found'))});
+app.use((req, res) => {res.status(404).render('404', new contextBlock())});
 
 
 // START SERVER
 app.listen(port, function(){
-    console.log('Express started on http://localhost:' + PORT + '; press Ctrl-C to terminate.')
+    console.log('Express started on http://localhost:' + port + '; press Ctrl-C to terminate.')
 });

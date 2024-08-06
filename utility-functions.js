@@ -1,3 +1,10 @@
+const fs = require('fs');
+const path = require('path');
+
+// get list of current entity pages
+var entitiesList = fs.readdirSync(path.join(__dirname,'views','entities')).map((name) => (name.replace(".handlebars","")));
+console.log(entitiesList);
+
 // foreign key to table name dictionary
 const foreignKeyTable = {
     pokemonId: 'Pokemon',
@@ -15,7 +22,7 @@ Copied from stackoverflow post
 URL: https://stackoverflow.com/a/1026087
 */
 function capFirst(str) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 /*
@@ -28,7 +35,7 @@ function toPretty(name) {
     let prettyName;
 
     // foreign key case using dictionary
-    if (foreignKeyTable.keys().includes(name)) {
+    if (Object.keys(foreignKeyTable).includes(name)) {
         prettyName = name.replace('Id','');
     }else {
         // split camelCase attribute name into Title Case words
@@ -40,8 +47,8 @@ function toPretty(name) {
 
 // Export functions/objects for external use
 module.exports = {
+    entitiesList,
     foreignKeyTable,
-    prettyNameTable,
     capFirst,
     toPretty
 };
