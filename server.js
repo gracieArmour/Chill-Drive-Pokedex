@@ -6,10 +6,9 @@ const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
-var { capFirst,
-    foreignKeyTable,
-    prettyNameTable,
-    entitiesList } = require('./utility-functions')  // Import the database connector
+var { foreignKeyTable,
+    capFirst,
+    toPretty } = require('./utility-functions')  // Import the database connector
 
 // collect environmentally stored variables
 var port = process.env.PORT;
@@ -34,16 +33,18 @@ class contextBlock {
     pageTitle;
     entityName;
     pageDescription;
-    entities = entitiesList;
+    entities = foreignKeyTable.values();
     pageContext = {
         tableEntries: []
     }
 
-    constructor(title,entity) {
-        this.pageTitle = title;
+    constructor(entity) {
         if (entity) {
+            this.pageTitle = capFirst(entity);
             this.entityName = entity;
-            this.layout = "entity";
+            this.pageDescription = `Enter a ${this.pageTitle} by completing the below form, or edit an existing ${this.pageTitle} by clicking on the ${this.pageTitle}'s name.`;
+        }else {
+            this.pageDescription = 'Welcome to the Chill Drive Pokedex! Here you can find information on Pokemon, moves, types, and abilities.';
         }
     }
 
@@ -66,12 +67,12 @@ app.get('/:homePath(home|Home|index|index.html)?', (req, res) => {res.status(200
 // ENTITY PAGE ROUTING
 app.get('/entity/:ent', (req, res, next) => {
     // get url variable
-    let entity = req.params.ent;
+    let entity = req.params.ent.toLowerCase();
 
     // skip to 404 if invalid page
-    if (!foreignKeyTable.values().includes(entity)) return next();
+    if (!foreignKeyTable.values().includes(capFirst(entity))) return next();
 
-    let responseContext = new contextBlock(capFirst(ent),ent);
+    let responseContext = new contextBlock(entity);
 
     // get table entries from database
     queryPromise('SELECT * FROM ?', [entity])
@@ -97,16 +98,16 @@ app.get('/entity/:ent', (req, res, next) => {
                 }
 
                 // add attributes and values to entry
-                entry[prettyNameTable[key]] = value;
+                entry[toPretty(key)] = value;
             });
 
             // add entry to table array
             responseContext.tableEntries.push(entry);
         });
-    })
 
-    // send page with data to frontend client
-    res.status(200).render('entity', responseContext.rawify());
+        // send page with data to frontend client
+        res.status(200).render('entity', responseContext.rawify());
+    })
 });
 
 

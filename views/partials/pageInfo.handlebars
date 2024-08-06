@@ -1,13 +1,11 @@
-<div id="HeroSection">
-    <h1>{{pageTitle}}</h1>
-    <p>
-        Enter a Move by completing the below form, or edit an existing Move by
-        clicking on the Move's name.
-    </p>
-    <ul>
-        <li>{{#if pageTitle}}<a href="home">{{/if}}Home{{#if pageTitle}}</a>{{/if}}</li>
-        {{#each entities as entity}}
-            <li>{{#if entity !== entityName}}<a href="entity/{{entity.file}}">{{/if}}{{entity.pretty}}{{#if entity !== entityName}}</a>{{/if}}</li>
-        {{/each}}
-    </ul>
-</div>
+<h1>{{pageTitle ? pageTitle : 'Home'}}</h1>
+<p>
+    Enter a Move by completing the below form, or edit an existing Move by
+    clicking on the Move's name.
+</p>
+<ul>
+    <li>{{#if pageTitle}}<a href="home">{{/if}}Home{{#if pageTitle}}</a>{{/if}}</li>
+    {{#each entities as entity}}
+        <li>{{#if entity !== entityName}}<a href="entity/{{entity.file}}">{{/if}}{{entity.pretty}}{{#if entity !== entityName}}</a>{{/if}}</li>
+    {{/each}}
+</ul>
