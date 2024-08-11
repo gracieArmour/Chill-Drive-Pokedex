@@ -2,13 +2,14 @@
 require('dotenv').config();
 const express = require('express');
 const exhandle = require('express-handlebars');
-const mysql = require('mysql');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
 var { entitiesList,
-    foreignKeyTable,
     capFirst,
-    toPretty } = require('./utility-functions')  // Import the database connector
+    toPretty,
+    prettyTable,
+    validateFields,
+    validateId } = require('./utility-functions')  // Import the database connector
 
 // collect environmentally stored variables
 var port = process.env.PORT;
@@ -45,7 +46,7 @@ class contextBlock {
             this.layout = 'entity';
             this.pageTitle = capFirst(entity);
             this.entityName = entity;
-            this.pageDescription = `Enter a ${this.pageTitle} by completing the below form, or edit an existing ${this.pageTitle} by clicking on the ${this.pageTitle}'s name.`;
+            this.pageDescription = `Enter a ${toPretty(this.pageTitle)} by completing the below form, or edit an existing ${toPretty(this.pageTitle)} by clicking on the ${toPretty(this.pageTitle)}'s name.`;
         }else {
             this.layout = 'main';
             this.pageDescription = 'Welcome to the Chill Drive Pokedex! Here you can find information on Pokemon, moves, types, and abilities.';
@@ -73,7 +74,7 @@ app.get('/entity/:ent', (req, res, next) => {
     // get url variable
     let entity = req.params.ent.toLowerCase();
 
-    // skip to 404 if invalid page
+    // skip to 404 if invalid entity
     if (!entitiesList.includes(entity)) return next();
 
     let responseContext = new contextBlock(entity);
@@ -81,40 +82,11 @@ app.get('/entity/:ent', (req, res, next) => {
     // get table entries from database
     queryPromise('SELECT * FROM ??', [capFirst(entity)])
     .catch(next)
-    .then((rows) => {
-        // iterate through rows returned
-        rows.forEach((row) => {
-            // make list of attributes
-            responseContext.pageContext.columns = Object.keys(row);
-
-            let entry = {};
-
-            // add attributes to entry
-            Object.keys(row).forEach((key) => {
-                let value;
-
-                // if foreign key attribute
-                if (Object.keys(foreignKeyTable).includes(row[key])) {
-                    // go get foreign key name value from referenced table
-                    queryPromise('SELECT name FROM ? WHERE id=?', [foreignKeyTable[key], row[key]])
-                    .then((fkNames) => {
-                        value = fkNames[0]; 
-                    });
-                }else {
-                    value = row[key];
-                }
-
-                // add attributes and values to entry
-                entry[key] = value;
-            });
-
-            // add entry to table array
-            responseContext.pageContext.tableEntries.push(entry);
-        });
-
+    .then((rows) => prettyTable(responseContext, rows))
+    .then((resultingContext) => {
         // send page with data to frontend client
-        res.status(200).render(path.join('entities',entity), responseContext.rawify());
-    })
+        res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+    });
 });
 
 
@@ -122,22 +94,95 @@ app.get('/entity/:ent', (req, res, next) => {
 POST REPLIES
 */
 
-// unfinished post to handle database queries
+// Universal route for processing database queries
 app.post('/database', (req,res,next) => {
+    // print request for debugging
+    console.log(`Database request received ${JSON.stringify(req.body)}`);
+
     let entity = req.body.entity;
+
+    // skip to 404 if invalid entity
+    if (!entitiesList.includes(entity)) return next();
+    
     let command = req.body.command;
     let data = req.body.data;
-    let id = req.body.id;
+    let responseContext = new contextBlock();
 
     switch (command) {
         case 'SELECT':
-            queryPromise('SELECT * FROM ?? WHERE name=?', [entity,data.name]);
+            validateFields(entity, data, next)
+            .then((valid) => {
+                if (!valid) return res.send('Invalid field');
+
+                let searchStr = data.searchTerms.map((term) => (`${term.field}=?`)).join(' AND ');
+                queryPromise(`SELECT * FROM ?? WHERE ${searchStr}`, [entity,...data.searchTerms.map((term) => (term.value))])
+                .catch(next)
+                .then((rows) => prettyTable(responseContext, rows))
+                .then((resultingContext) => {
+                    // send page with data to frontend client
+                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                });
+            });
             break;
+            
         case 'CREATE':
+            validateFields(entity, data, next)
+            .then((valid) => {
+                if (!valid) return res.send('Invalid field');
+
+                let fieldsStr = data.insertTerms.map((term) => (term.field)).join(', ');
+                let valuePlaceholders = []
+                data.insertTerms.forEach((term) => {
+                    valuePlaceholders.push('?')
+                })
+
+                queryPromise(`INSERT INTO ?? (${fieldsStr}) VALUES (${valuePlaceholders.join(', ')})`,[entity,...data.insertTerms.map((term) => (term.value))])
+                .catch(next)
+                .then((rows) => queryPromise('SELECT * FROM ??', [entity]))
+                .catch(next)
+                .then((rows) => prettyTable(responseContext, rows))
+                .then((resultingContext) => {
+                    // send page with data to frontend client
+                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                });
+            });
             break;
+
         case 'UPDATE':
+            validateFields(entity, data, next)
+            .then((valid) => {
+                if (!valid) return res.send('Invalid field');
+
+                validateId(entity, data.id, next)
+                .then((valid) => {
+                    if (!valid) return res.send('ID does not exist');
+                    
+                    let updateStr = data.updateTerms.map((term) => (`${term.field}=?`)).join(', ');
+                    queryPromise(`UPDATE ?? SET ${updateStr} WHERE id=?`, [entity,...data.updateTerms.map((term) => (term.value)),id])
+                    .catch(next)
+                    .then((rows) => queryPromise('SELECT * FROM ??', [entity]))
+                    .catch(next)
+                    .then((rows) => prettyTable(responseContext, rows))
+                    .then((resultingContext) => {
+                        // send page with data to frontend client
+                        res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                    });
+                });
+            });
             break;
+            
         case 'DELETE':
+            validateId(entity, data.id, next)
+            .then((valid) => {
+                if (!valid) return res.send('ID does not exist');
+
+                queryPromise('DELETE FROM ?? WHERE id=?', [entity,data.id])
+                .then((rows) => prettyTable(responseContext, rows))
+                .then((resultingContext) => {
+                    // send page with data to frontend client
+                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                });
+            })
             break;
     }
 });

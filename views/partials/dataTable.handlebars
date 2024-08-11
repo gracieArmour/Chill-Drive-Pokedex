@@ -1,0 +1,18 @@
+<table id="{{entityName}}Data">
+  <thead>
+    <tr>
+      {{#each pageContext.columns}}
+        <th>{{this}}</th>
+      {{/each}}
+    </tr>
+  </thead>
+  <tbody>
+    {{#each pageContext.tableEntries}}
+      <tr>
+        {{#each this}}
+          <td class="{{@key}}-column">{{this}}</td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

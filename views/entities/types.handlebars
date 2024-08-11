@@ -1,10 +1,7 @@
-<head>
-  <script type="text/javascript" src="/types.js" defer></script>
-</head>
-<form class="form-horizontal">
+<form id="search-form" class="form-horizontal" data-command="SELECT" method="post" action="" onsubmit="Query(this)">
   <fieldset>
     <!-- Form Name -->
-    <legend>Enter or search Type</legend>
+    <legend>Search for Type</legend>
 
     <!-- Text input-->
     <div class="form-group">
@@ -18,28 +15,7 @@
     </div>
 
     <br />
-    <button id="enter-button" type="button" onclick="">Enter</button>
-    <button id="search-button" type="button" onclick="">Search</button>
+    <button id="search-button" type="submit">Search</button>
   </fieldset>
 </form>
 
-<table id="typesData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Type Name</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each pageContext.tableEntries}}
-      <tr>
-        {{#each this}}
-          <td class="{{@key}}-column">{{this}}</td>
-        {{/each}}
-      </tr>
-    {{/each}}
-  </tbody>
-</table>
-<pre>
-  {{raw}}
-</pre>

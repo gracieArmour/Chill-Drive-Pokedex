@@ -45,10 +45,70 @@ function toPretty(name) {
     return capFirst(prettyName);
 };
 
+// Make SELECT results human-readable
+async function prettyTable(responseContext, rows) {
+    // iterate through rows returned
+    await rows.forEach(async function(row) {
+        // make list of attributes
+        responseContext.pageContext.columns = toPretty(Object.keys(row));
+
+        // add attributes to entry
+        await Object.keys(row).forEach(async function(key) {
+            let value;
+
+            // if foreign key attribute
+            if (Object.keys(foreignKeyTable).includes(row[key])) {
+                // go get foreign key name value from referenced table
+                await queryPromise('SELECT name FROM ? WHERE id=?', [foreignKeyTable[key], row[key]])
+                .catch(next)
+                .then((fkNames) => {
+                    value = fkNames[0]; 
+                });
+            }else {
+                value = row[key];
+            }
+
+            // add entry to table array
+            responseContext.pageContext.tableEntries.push({key: value});
+        });
+    });
+
+    return responseContext;
+};
+
+// Validate that all fields sent by client are real fields in the table
+async function validateFields(entity, data, next) {
+    let valid = false;
+
+    await queryPromise('SELECT TOP 1 * FROM ??', [entity])
+    .catch(next)
+    .then((rows) => {
+        if (data.searchTerms.every((term) => (Object.keys(rows[0]).includes(term.field)))) valid = true;
+    });
+
+    return valid;
+}
+
+// Validate that id sent by client exists in the table
+async function validateId(entity, id, next) {
+    let valid = false;
+
+    await queryPromise('SELECT id FROM ??',[entity])
+    .catch(next)
+    .then((rows) => {
+        if (rows.map((row) => (row[0].id)).includes(id)) valid = true;
+    });
+
+    return valid;
+}
+
 // Export functions/objects for external use
 module.exports = {
     entitiesList,
     foreignKeyTable,
     capFirst,
-    toPretty
+    toPretty,
+    prettyTable,
+    validateFields,
+    validateId
 };
