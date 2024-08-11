@@ -1,7 +1,7 @@
-<form class="form-horizontal">
+<form id="search-form" class="form-horizontal" data-command="SELECT" method="post" action="" onsubmit="Query(this)">
   <fieldset>
     <!-- Form Name -->
-    <legend>Enter or search Move</legend>
+    <legend>Search Moves</legend>
 
     <!-- Text input-->
     <div class="form-group">
@@ -103,86 +103,7 @@
     </div>
 
     <br />
-    <button type="button" onclick="">Enter</button>
-    <button type="button" onclick="">Search</button>
+    <button type="submit">Search</button>
   </fieldset>
 </form>
 
-<table id="movesData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Move Name</th>
-      <th>Description</th>
-      <th>Type</th>
-      <th>Category</th>
-      <th>Range</th>
-      <th>PP</th>
-      <th>Power</th>
-      <th>Accuracy</th>
-      <th>Priority</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>❌ 1</td>
-      <td>✍ Tackle</td>
-      <td>
-        A physical attack in which the user charges and slams into the
-        target with its whole body.
-      </td>
-      <td>Normal</td>
-      <td>Physical</td>
-      <td>Normal</td>
-      <td>35</td>
-      <td>40</td>
-      <td>100</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>❌ 2</td>
-      <td>✍ Thunder Shock</td>
-      <td>
-        A jolt of electricity crashes down on the target to inflict
-        damage. This may also leave the target with paralysis.
-      </td>
-      <td>Electric</td>
-      <td>Special</td>
-      <td>Normal</td>
-      <td>30</td>
-      <td>40</td>
-      <td>100</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>❌ 3</td>
-      <td>✍ Flame Thrower</td>
-      <td>
-        The target is scorched with an intense blast of fire. This may
-        also leave the target with a burn.
-      </td>
-      <td>Fire</td>
-      <td>Special</td>
-      <td>Normal</td>
-      <td>15</td>
-      <td>90</td>
-      <td>100</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <td>❌ 4</td>
-      <td>✍ String Shot</td>
-      <td>
-        The opposing Pokémon are bound with silk blown from the user's
-        mouth that harshly lowers the Speed stat.
-      </td>
-      <td>Bug</td>
-      <td>Status</td>
-      <td>Normal</td>
-      <td>40</td>
-      <td>0</td>
-      <td>95</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>

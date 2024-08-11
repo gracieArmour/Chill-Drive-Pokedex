@@ -1,5 +1,6 @@
 async function Query(formElem) {
 	let formData = new FormData(formElem);
+	console.log(formData);
 	let data = {};
 
 	switch (command) {
@@ -8,7 +9,7 @@ async function Query(formElem) {
 			Object.keys(formData).forEach((key) => (data.searchTerms.push({field: key, value: formData[key]})));
 		break;
 
-		case 'CREATE':
+		case 'INSERT':
 			data.insertTerms = [];
 			Object.keys(formData).forEach((key) => (data.insertTerms.push({field: key, value: formData[key]})));
 		break;

@@ -1,8 +1,7 @@
-
-<form class="form-horizontal">
+<form id="search-form" class="form-horizontal" data-command="SELECT" method="post" action="" onsubmit="Query(this)">
   <fieldset>
     <!-- Form Name -->
-    <legend>Enter or search Pokemon</legend>
+    <legend>Search Pokemon</legend>
 
     <!-- Text input-->
     <div class="form-group">
@@ -141,78 +140,7 @@
     </div>
 
     <br />
-    <button type="button" onclick="">Enter</button>
-    <button type="button" onclick="">Search</button>
+    <button type="submit">Search</button>
   </fieldset>
 </form>
 
-<table id="pokemonData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Species</th>
-      <th>Intro Gen</th>
-      <th>Latest Gen</th>
-      <th>HP</th>
-      <th>Attack</th>
-      <th>Defense</th>
-      <th>Sp. Attack</th>
-      <th>Sp. Defense</th>
-      <th>Speed</th>
-      <th>Friendship</th>
-      <th>Weight</th>
-      <th>Height</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>❌ 1</td>
-      <td>✍ Charmander</td>
-      <td>Lizard Pokemon</td>
-      <td>1</td>
-      <td>8</td>
-      <td>39</td>
-      <td>52</td>
-      <td>43</td>
-      <td>60</td>
-      <td>50</td>
-      <td>65</td>
-      <td>50</td>
-      <td>18.7 lbs</td>
-      <td>2'0"</td>
-    </tr>
-    <tr>
-      <td>❌ 2</td>
-      <td>✍ Pikachu</td>
-      <td>Mouse Pokemon</td>
-      <td>1</td>
-      <td>8</td>
-      <td>35</td>
-      <td>55</td>
-      <td>40</td>
-      <td>50</td>
-      <td>50</td>
-      <td>90</td>
-      <td>50</td>
-      <td>13.2 lbs</td>
-      <td>1'4"</td>
-    </tr>
-    <tr>
-      <td>❌ 3</td>
-      <td>✍ Caterpie</td>
-      <td>Worm Pokemon</td>
-      <td>1</td>
-      <td>8</td>
-      <td>45</td>
-      <td>30</td>
-      <td>35</td>
-      <td>20</td>
-      <td>20</td>
-      <td>45</td>
-      <td>50</td>
-      <td>6.4 lbs</td>
-      <td>1'0"</td>
-    </tr>
-  </tbody>
-</table>

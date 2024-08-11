@@ -1,8 +1,7 @@
-
-<form class="form-horizontal">
+<form id="search-form" class="form-horizontal" data-command="SELECT" method="post" action="" onsubmit="Query(this)">
   <fieldset>
     <!-- Form Name -->
-    <legend>Enter or search Range</legend>
+    <legend>Search Ranges</legend>
 
     <!-- Text input-->
     <div class="form-group">
@@ -27,26 +26,7 @@
     </div>
 
     <br />
-    <button type="button" onclick="">Enter</button>
-    <button type="button" onclick="">Search</button>
+    <button type="submit">Search</button>
   </fieldset>
 </form>
 
-<table id="rangesData">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Range Name</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>❌ 1</td>
-      <td>✍ Normal</td>
-      <td>Effects one target Pokemon</td>
-    </tr>
-
-    <!-- Add more rows as needed -->
-  </tbody>
-</table>

@@ -125,7 +125,7 @@ app.post('/database', (req,res,next) => {
             });
             break;
             
-        case 'CREATE':
+        case 'INSERT':
             validateFields(entity, data, next)
             .then((valid) => {
                 if (!valid) return res.send('Invalid field');
