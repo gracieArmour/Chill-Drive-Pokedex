@@ -41,7 +41,6 @@ class contextBlock {
     }
 
     constructor(entity) {
-        console.log(this.entities);
         if (entity) {
             this.layout = 'entity';
             this.pageTitle = capFirst(entity);
@@ -68,7 +67,6 @@ GET ROUTES
 // HOME PAGE ROUTING
 app.get('/:homePath(home|Home|index|index.html)?', (req, res) => {res.status(200).render('home', new contextBlock())});
 
-
 // ENTITY PAGE ROUTING
 app.get('/entity/:ent', (req, res, next) => {
     // get url variable
@@ -82,7 +80,7 @@ app.get('/entity/:ent', (req, res, next) => {
     // get table entries from database
     queryPromise('SELECT * FROM ??', [capFirst(entity)])
     .catch(next)
-    .then((rows) => prettyTable(responseContext, rows))
+    .then((rows) => prettyTable(responseContext, rows, next))
     .then((resultingContext) => {
         // send page with data to frontend client
         res.status(200).render(path.join('entities',entity), resultingContext.rawify());
@@ -95,38 +93,40 @@ POST REPLIES
 */
 
 // Universal route for processing database queries
-app.post('/database', (req,res,next) => {
+app.post('/database/:ent', (req,res,next) => {
     // print request for debugging
     console.log(`Database request received ${JSON.stringify(req.body)}`);
-
-    let entity = req.body.entity;
+    
+    let entity = req.params.ent;
 
     // skip to 404 if invalid entity
     if (!entitiesList.includes(entity)) return next();
     
+    
+    let entityName = capFirst(entity);
     let command = req.body.command;
     let data = req.body.data;
-    let responseContext = new contextBlock();
+    let responseContext = new contextBlock(entity);
 
     switch (command) {
         case 'SELECT':
-            validateFields(entity, data, next)
+            validateFields(entityName, data, next)
             .then((valid) => {
                 if (!valid) return res.send('Invalid field');
 
                 let searchStr = data.searchTerms.map((term) => (`${term.field}=?`)).join(' AND ');
-                queryPromise(`SELECT * FROM ?? WHERE ${searchStr}`, [entity,...data.searchTerms.map((term) => (term.value))])
+                queryPromise(`SELECT * FROM ?? WHERE ${searchStr}`, [entityName,...data.searchTerms.map((term) => (term.value))])
                 .catch(next)
-                .then((rows) => prettyTable(responseContext, rows))
+                .then((rows) => prettyTable(responseContext, rows, next))
                 .then((resultingContext) => {
                     // send page with data to frontend client
-                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                    res.status(200).send(`/entity/${entity}`);
                 });
             });
             break;
             
         case 'INSERT':
-            validateFields(entity, data, next)
+            validateFields(entityName, data, next)
             .then((valid) => {
                 if (!valid) return res.send('Invalid field');
 
@@ -138,9 +138,9 @@ app.post('/database', (req,res,next) => {
 
                 queryPromise(`INSERT INTO ?? (${fieldsStr}) VALUES (${valuePlaceholders.join(', ')})`,[entity,...data.insertTerms.map((term) => (term.value))])
                 .catch(next)
-                .then((rows) => queryPromise('SELECT * FROM ??', [entity]))
+                .then((rows) => queryPromise('SELECT * FROM ??', [entityName]))
                 .catch(next)
-                .then((rows) => prettyTable(responseContext, rows))
+                .then((rows) => prettyTable(responseContext, rows, next))
                 .then((resultingContext) => {
                     // send page with data to frontend client
                     res.status(200).render(path.join('entities',entity), resultingContext.rawify());
@@ -149,20 +149,20 @@ app.post('/database', (req,res,next) => {
             break;
 
         case 'UPDATE':
-            validateFields(entity, data, next)
+            validateFields(entityName, data, next)
             .then((valid) => {
                 if (!valid) return res.send('Invalid field');
 
-                validateId(entity, data.id, next)
+                validateId(entityName, data.id, next)
                 .then((valid) => {
                     if (!valid) return res.send('ID does not exist');
                     
                     let updateStr = data.updateTerms.map((term) => (`${term.field}=?`)).join(', ');
-                    queryPromise(`UPDATE ?? SET ${updateStr} WHERE id=?`, [entity,...data.updateTerms.map((term) => (term.value)),id])
+                    queryPromise(`UPDATE ?? SET ${updateStr} WHERE id=?`, [entityName,...data.updateTerms.map((term) => (term.value)),id])
                     .catch(next)
-                    .then((rows) => queryPromise('SELECT * FROM ??', [entity]))
+                    .then((rows) => queryPromise('SELECT * FROM ??', [entityName]))
                     .catch(next)
-                    .then((rows) => prettyTable(responseContext, rows))
+                    .then((rows) => prettyTable(responseContext, rows, next))
                     .then((resultingContext) => {
                         // send page with data to frontend client
                         res.status(200).render(path.join('entities',entity), resultingContext.rawify());
@@ -172,12 +172,12 @@ app.post('/database', (req,res,next) => {
             break;
             
         case 'DELETE':
-            validateId(entity, data.id, next)
+            validateId(entityName, data.id, next)
             .then((valid) => {
                 if (!valid) return res.send('ID does not exist');
 
-                queryPromise('DELETE FROM ?? WHERE id=?', [entity,data.id])
-                .then((rows) => prettyTable(responseContext, rows))
+                queryPromise('DELETE FROM ?? WHERE id=?', [entityName,data.id])
+                .then((rows) => prettyTable(responseContext, rows, next))
                 .then((resultingContext) => {
                     // send page with data to frontend client
                     res.status(200).render(path.join('entities',entity), resultingContext.rawify());

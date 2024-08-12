@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+var { queryPromise } = require('./db-functions')  // Import the database connector
 
 // get list of current entity pages
-var entitiesList = fs.readdirSync(path.join(__dirname,'views','entities')).map((name) => (name.replace(".handlebars","")));
+const entitiesList = fs.readdirSync(path.join(__dirname,'views','entities')).map((name) => (name.replace(".handlebars","")));
 console.log(entitiesList);
 
 // foreign key to table name dictionary
@@ -46,43 +47,48 @@ function toPretty(name) {
 };
 
 // Make SELECT results human-readable
-async function prettyTable(responseContext, rows) {
+async function prettyTable(responseContext, rows, next) {
     // iterate through rows returned
     await rows.forEach(async function(row) {
         // make list of attributes
-        responseContext.pageContext.columns = toPretty(Object.keys(row));
+        responseContext.pageContext.columns = Object.keys(row).map((column) => (toPretty(column)));
+
+        let entry = {}
 
         // add attributes to entry
-        await Object.keys(row).forEach(async function(key) {
+        for (let key of Object.keys(row)) {
             let value;
 
             // if foreign key attribute
-            if (Object.keys(foreignKeyTable).includes(row[key])) {
+            if (Object.keys(foreignKeyTable).includes(key)) {
                 // go get foreign key name value from referenced table
-                await queryPromise('SELECT name FROM ? WHERE id=?', [foreignKeyTable[key], row[key]])
+                await queryPromise('SELECT name FROM ?? WHERE id=?', [foreignKeyTable[key], row[key]])
                 .catch(next)
                 .then((fkNames) => {
-                    value = fkNames[0]; 
+                    value = fkNames[0].name; 
                 });
             }else {
                 value = row[key];
             }
 
-            // add entry to table array
-            responseContext.pageContext.tableEntries.push({key: value});
-        });
+            entry[key] = value;
+        }
+
+        // add entry to table array
+        responseContext.pageContext.tableEntries.push(entry);
     });
 
     return responseContext;
 };
 
 // Validate that all fields sent by client are real fields in the table
-async function validateFields(entity, data, next) {
+async function validateFields(entityName, data, next) {
     let valid = false;
 
-    await queryPromise('SELECT TOP 1 * FROM ??', [entity])
+    await queryPromise('SELECT * FROM ?? LIMIT 1', [entityName])
     .catch(next)
     .then((rows) => {
+        console.log(Object.keys(rows[0]));
         if (data.searchTerms.every((term) => (Object.keys(rows[0]).includes(term.field)))) valid = true;
     });
 
@@ -90,10 +96,10 @@ async function validateFields(entity, data, next) {
 }
 
 // Validate that id sent by client exists in the table
-async function validateId(entity, id, next) {
+async function validateId(entityName, id, next) {
     let valid = false;
 
-    await queryPromise('SELECT id FROM ??',[entity])
+    await queryPromise('SELECT id FROM ??',[entityName])
     .catch(next)
     .then((rows) => {
         if (rows.map((row) => (row[0].id)).includes(id)) valid = true;
