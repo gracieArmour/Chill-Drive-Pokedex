@@ -1,5 +1,7 @@
 /*
-Citation for the code below
+CITATIONS
+
+Initial mysql and dotenv code, from line 11 to line 23
 Date: 8/3/2024
 Initial code copied and then modified from my Activity 2 solution
 URL: https://canvas.oregonstate.edu/courses/1967354/assignments/9690199

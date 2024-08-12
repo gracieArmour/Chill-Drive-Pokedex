@@ -1,3 +1,17 @@
+/*
+CITATIONS
+
+String capitalization helper function (line 46)
+Date: 8/3/2024
+Copied from stackoverflow post
+URL: https://stackoverflow.com/a/1026087
+
+Regex replace usage (line 59)
+Date: 8/5/2024
+Copied and then modified from stackoverflow post
+URL: https://stackoverflow.com/a/54246501
+*/
+
 const fs = require('fs');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
@@ -28,22 +42,12 @@ function errorHandler(res,err,code) {
     res.status(code).send(err);
 }
 
-/*
-Citation for string capitalizing helper function below
-Date: 8/3/2024
-Copied from stackoverflow post
-URL: https://stackoverflow.com/a/1026087
-*/
+// string capitalization helper function, citation at top of file
 function capFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-/*
-Citation for the regex replace usage below
-Date: 8/5/2024
-Copied and then modified from stackoverflow post
-URL: https://stackoverflow.com/a/54246501
-*/
+// string manipulation helper function, citation at top of file
 function toPretty(name) {
     let prettyName;
 

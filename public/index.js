@@ -1,5 +1,7 @@
 /*
-Citation for unhandlerejection override below
+CITATIONS
+
+unhandlerejection override (line 9)
 Date: 8/11/2024
 Copied from stackoverflow post
 URL: https://stackoverflow.com/a/60782386
