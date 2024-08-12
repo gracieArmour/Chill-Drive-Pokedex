@@ -5,11 +5,11 @@ const exhandle = require('express-handlebars');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
 var { entitiesList,
+    codedError,
+    errorHandler,
     capFirst,
     toPretty,
     prettyTable,
-    errorHandler,
-    codedError,
     validateFields,
     validateId } = require('./utility-functions');  // Import the database connector
 const e = require('express');
