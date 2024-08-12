@@ -1,25 +1,23 @@
 /*
 CITATIONS
 
-unhandlerejection override (line 9)
+unhandlerejection override (line 11)
 Date: 8/11/2024
 Copied from stackoverflow post
 URL: https://stackoverflow.com/a/60782386
 */
+
+// Prevents default login of promises to enable page reload after queries, citation above
 window.addEventListener('unhandledrejection', (event) => {
 	event.preventDefault();
 }, false);
 
+// Using addEventListener for forms instead of onsubmit to enable preventdefault()
 [...document.getElementsByClassName('form-horizontal')].forEach((elem) => {
 	elem.addEventListener('submit', (e) => Query(e, elem));
 });
 
-// function numberParser(str) {
-// 	if (parseInt(str)) return parseInt(str);
-// 	if (parseFloat(str)) return parseFloat(str);
-// 	return str;
-// }
-
+// Polymorphic query fetch function to handle frontend implementation all CRUD actions
 async function Query(e, formElem) {
 	e.preventDefault();
 	let formData = new FormData(formElem);

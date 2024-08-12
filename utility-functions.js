@@ -1,12 +1,12 @@
 /*
 CITATIONS
 
-String capitalization helper function (line 46)
+String capitalization helper function (line 47)
 Date: 8/3/2024
 Copied from stackoverflow post
 URL: https://stackoverflow.com/a/1026087
 
-Regex replace usage (line 59)
+Regex replace usage (line 60)
 Date: 8/5/2024
 Copied and then modified from stackoverflow post
 URL: https://stackoverflow.com/a/54246501
@@ -38,6 +38,7 @@ class codedError extends Error {
     }
 }
 
+// Error handling function primarily for rejected queryPromises
 function errorHandler(res,err,code) {
     res.status(code).send(err);
 }
@@ -129,11 +130,11 @@ async function validateId(entityName, id, res) {
 module.exports = {
     entitiesList,
     foreignKeyTable,
+    codedError,
+    errorHandler,
     capFirst,
     toPretty,
     prettyTable,
-    errorHandler,
-    codedError,
     validateFields,
     validateId
 };

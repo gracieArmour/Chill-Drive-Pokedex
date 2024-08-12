@@ -22,6 +22,7 @@ var dbpool = mysql.createPool({
     database        : process.env.DBNAME
 })
 
+// custom wrapper function to make queries return promises, so .then() can easily be used with them
 function queryPromise(queryStr,arr) {
     return new Promise((resolve,reject) => {
         dbpool.query(queryStr, arr, (err,rows) => {

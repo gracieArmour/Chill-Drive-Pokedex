@@ -32,7 +32,7 @@ app.engine('handlebars', exhandle.engine({
 }));
 app.set('view engine', 'handlebars');
 
-// context class for providing page routing
+// custom context class for providing page routing
 class contextBlock {
     pageTitle;
     entityName;
@@ -110,9 +110,9 @@ app.get('/entity/:ent', (req, res, next) => {
 POST REPLIES
 */
 
-// Universal route for processing database queries
+// Universal post route for processing database queries
 app.post('/database/:ent', (req,res,next) => {
-    // print request for debugging
+    // print full request for debugging
     console.log(`Database request received ${JSON.stringify(req.body)}`);
     
     let entity = req.params.ent.toLowerCase();
@@ -120,7 +120,7 @@ app.post('/database/:ent', (req,res,next) => {
     // skip to 404 if invalid entity
     if (!entitiesList.includes(entity)) return next();
     
-    
+    // collect data from request
     let entityName = capFirst(entity);
     let command = req.body.command;
     let data = req.body.data;
