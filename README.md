@@ -30,7 +30,7 @@ URL: https://stackoverflow.com/a/60782386
 
 
 ## NOTE FOR USAGE
-Not included in this git file is a file titled `.env` in the root directory, containing database credential info and the port required for the app to function.
+Not included in this git repo is a file titled `.env` in the root directory, containing database credential info and the port required for the app to function.
 It looks like this:
 
 ```
