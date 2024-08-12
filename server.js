@@ -8,8 +8,11 @@ var { entitiesList,
     capFirst,
     toPretty,
     prettyTable,
+    errorHandler,
+    codedError,
     validateFields,
-    validateId } = require('./utility-functions')  // Import the database connector
+    validateId } = require('./utility-functions');  // Import the database connector
+const e = require('express');
 
 // collect environmentally stored variables
 var port = process.env.PORT;
@@ -75,15 +78,30 @@ app.get('/entity/:ent', (req, res, next) => {
     // skip to 404 if invalid entity
     if (!entitiesList.includes(entity)) return next();
 
+    let entityName = capFirst(entity);
+    console.log(req.query);
+    let searchTerms = Object.keys(req.query).map((key) => ({field: key, value: req.query[key]}));
     let responseContext = new contextBlock(entity);
 
-    // get table entries from database
-    queryPromise('SELECT * FROM ??', [capFirst(entity)])
-    .catch(next)
-    .then((rows) => prettyTable(responseContext, rows, next))
-    .then((resultingContext) => {
-        // send page with data to frontend client
-        res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+    validateFields(entityName, searchTerms, res)
+    .then((valid) => {
+        if (!valid) return next(new codedError('Invalid field',403));
+
+        // Prepare search data if it exists
+        let searchStr = searchTerms.length > 0 ? `WHERE ${searchTerms.map((term) => (`${term.field}=?`)).join(' AND ')}` : '';
+        let argArr = [entityName];
+        if (searchTerms.length > 0) {
+            searchTerms.forEach((term) => {argArr.push(term.value)});
+        }
+
+        // Render page with table data
+        queryPromise(`SELECT * FROM ?? ${searchStr} ORDER BY id ASC`, argArr)
+        .catch((err) => errorHandler(err,res,500))
+        .then((rows) => prettyTable(responseContext, rows, res))
+        .then((resultingContext) => {
+            // send page with data to frontend client
+            res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+        });
     });
 });
 
@@ -97,7 +115,7 @@ app.post('/database/:ent', (req,res,next) => {
     // print request for debugging
     console.log(`Database request received ${JSON.stringify(req.body)}`);
     
-    let entity = req.params.ent;
+    let entity = req.params.ent.toLowerCase();
 
     // skip to 404 if invalid entity
     if (!entitiesList.includes(entity)) return next();
@@ -106,29 +124,12 @@ app.post('/database/:ent', (req,res,next) => {
     let entityName = capFirst(entity);
     let command = req.body.command;
     let data = req.body.data;
-    let responseContext = new contextBlock(entity);
 
     switch (command) {
-        case 'SELECT':
-            validateFields(entityName, data, next)
-            .then((valid) => {
-                if (!valid) return res.send('Invalid field');
-
-                let searchStr = data.searchTerms.map((term) => (`${term.field}=?`)).join(' AND ');
-                queryPromise(`SELECT * FROM ?? WHERE ${searchStr}`, [entityName,...data.searchTerms.map((term) => (term.value))])
-                .catch(next)
-                .then((rows) => prettyTable(responseContext, rows, next))
-                .then((resultingContext) => {
-                    // send page with data to frontend client
-                    res.status(200).send(`/entity/${entity}`);
-                });
-            });
-            break;
-            
         case 'INSERT':
-            validateFields(entityName, data, next)
+            validateFields(entityName, data.insertTerms, res)
             .then((valid) => {
-                if (!valid) return res.send('Invalid field');
+                if (!valid) return next(new codedError('Invalid field',403));
 
                 let fieldsStr = data.insertTerms.map((term) => (term.field)).join(', ');
                 let valuePlaceholders = []
@@ -136,51 +137,42 @@ app.post('/database/:ent', (req,res,next) => {
                     valuePlaceholders.push('?')
                 })
 
-                queryPromise(`INSERT INTO ?? (${fieldsStr}) VALUES (${valuePlaceholders.join(', ')})`,[entity,...data.insertTerms.map((term) => (term.value))])
-                .catch(next)
-                .then((rows) => queryPromise('SELECT * FROM ??', [entityName]))
-                .catch(next)
-                .then((rows) => prettyTable(responseContext, rows, next))
-                .then((resultingContext) => {
-                    // send page with data to frontend client
-                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                queryPromise(`INSERT INTO ?? (${fieldsStr}) VALUES (${valuePlaceholders.join(', ')})`,[entityName,...data.insertTerms.map((term) => (term.value))])
+                .catch((err) => errorHandler(err,res,500))
+                .then((rows) => {
+                    res.status(200).send('Insert successful');
                 });
             });
             break;
 
         case 'UPDATE':
-            validateFields(entityName, data, next)
+            validateFields(entityName, data.updateTerms, res)
             .then((valid) => {
-                if (!valid) return res.send('Invalid field');
+                if (!valid) return next(new codedError('Invalid field',403));
 
-                validateId(entityName, data.id, next)
+                validateId(entityName, data.id, res)
                 .then((valid) => {
-                    if (!valid) return res.send('ID does not exist');
+                    if (!valid) next(new codedError('ID does not exist',403));
                     
                     let updateStr = data.updateTerms.map((term) => (`${term.field}=?`)).join(', ');
                     queryPromise(`UPDATE ?? SET ${updateStr} WHERE id=?`, [entityName,...data.updateTerms.map((term) => (term.value)),id])
-                    .catch(next)
-                    .then((rows) => queryPromise('SELECT * FROM ??', [entityName]))
-                    .catch(next)
-                    .then((rows) => prettyTable(responseContext, rows, next))
-                    .then((resultingContext) => {
-                        // send page with data to frontend client
-                        res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                    .catch((err) => errorHandler(err,res,500))
+                    .then((rows) => {
+                        res.status(200).send('Insert successful');
                     });
                 });
             });
             break;
             
         case 'DELETE':
-            validateId(entityName, data.id, next)
+            validateId(entityName, data.id, res)
             .then((valid) => {
-                if (!valid) return res.send('ID does not exist');
+                if (!valid) return next(new codedError('ID does not exist',403));
 
                 queryPromise('DELETE FROM ?? WHERE id=?', [entityName,data.id])
-                .then((rows) => prettyTable(responseContext, rows, next))
-                .then((resultingContext) => {
-                    // send page with data to frontend client
-                    res.status(200).render(path.join('entities',entity), resultingContext.rawify());
+                .catch((err) => errorHandler(err,res,500))
+                .then((rows) => {
+                    res.status(200).send('Insert successful');
                 });
             })
             break;

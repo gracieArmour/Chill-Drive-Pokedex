@@ -4,7 +4,6 @@ var { queryPromise } = require('./db-functions')  // Import the database connect
 
 // get list of current entity pages
 const entitiesList = fs.readdirSync(path.join(__dirname,'views','entities')).map((name) => (name.replace(".handlebars","")));
-console.log(entitiesList);
 
 // foreign key to table name dictionary
 const foreignKeyTable = {
@@ -15,6 +14,19 @@ const foreignKeyTable = {
     rangeId: 'Ranges',
     moveId: 'Moves'
 };
+
+// custom error class, pulled from an old personal project
+class codedError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.status = code;
+        this.statusCode = code;
+    }
+}
+
+function errorHandler(res,err,code) {
+    res.status(code).send(err);
+}
 
 /*
 Citation for string capitalizing helper function below
@@ -47,9 +59,9 @@ function toPretty(name) {
 };
 
 // Make SELECT results human-readable
-async function prettyTable(responseContext, rows, next) {
+async function prettyTable(responseContext, rows, res) {
     // iterate through rows returned
-    await rows.forEach(async function(row) {
+    for (let row of rows) {
         // make list of attributes
         responseContext.pageContext.columns = Object.keys(row).map((column) => (toPretty(column)));
 
@@ -63,7 +75,7 @@ async function prettyTable(responseContext, rows, next) {
             if (Object.keys(foreignKeyTable).includes(key)) {
                 // go get foreign key name value from referenced table
                 await queryPromise('SELECT name FROM ?? WHERE id=?', [foreignKeyTable[key], row[key]])
-                .catch(next)
+                .catch((err) => errorHandler(res,err,500))
                 .then((fkNames) => {
                     value = fkNames[0].name; 
                 });
@@ -76,33 +88,34 @@ async function prettyTable(responseContext, rows, next) {
 
         // add entry to table array
         responseContext.pageContext.tableEntries.push(entry);
-    });
+    }
 
     return responseContext;
 };
 
 // Validate that all fields sent by client are real fields in the table
-async function validateFields(entityName, data, next) {
+async function validateFields(entityName, dataTerms, res) {
     let valid = false;
 
+    if (!dataTerms || !(dataTerms.length > 0)) return true;
+
     await queryPromise('SELECT * FROM ?? LIMIT 1', [entityName])
-    .catch(next)
+    .catch((err) => errorHandler(err,res,500))
     .then((rows) => {
-        console.log(Object.keys(rows[0]));
-        if (data.searchTerms.every((term) => (Object.keys(rows[0]).includes(term.field)))) valid = true;
+        if (dataTerms.every((term) => (Object.keys(rows[0]).includes(term.field)))) valid = true;
     });
 
     return valid;
 }
 
 // Validate that id sent by client exists in the table
-async function validateId(entityName, id, next) {
+async function validateId(entityName, id, res) {
     let valid = false;
 
     await queryPromise('SELECT id FROM ??',[entityName])
-    .catch(next)
+    .catch((err) => errorHandler(err,res,500))
     .then((rows) => {
-        if (rows.map((row) => (row[0].id)).includes(id)) valid = true;
+        if (rows.map((row) => (row.id)).includes(id)) valid = true;
     });
 
     return valid;
@@ -115,6 +128,8 @@ module.exports = {
     capFirst,
     toPretty,
     prettyTable,
+    errorHandler,
+    codedError,
     validateFields,
     validateId
 };
