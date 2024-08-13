@@ -11,6 +11,7 @@ var { entitiesList,
     toPretty,
     prettyTable,
     validateFields,
+    pkHandler,
     validateId } = require('./utility-functions');  // Import the database connector
 const e = require('express');
 
@@ -37,7 +38,7 @@ class contextBlock {
     pageTitle;
     entityName;
     pageDescription;
-    entities = entitiesList.map((entity) => ({file: entity, pretty: toPretty(entity)}));
+    entities = ['Abilities','Categories','Moves','Pokemon','Ranges','Types'].map((entity) => ({file: entity.toLowerCase(), pretty: entity}));
     pageContext = {
         columns: [],
         tableEntries: []
@@ -46,7 +47,7 @@ class contextBlock {
     constructor(entity) {
         if (entity) {
             this.layout = 'entity';
-            this.pageTitle = capFirst(entity);
+            this.pageTitle = entitiesList[entity];
             this.entityName = entity;
             this.pageDescription = `Enter a ${toPretty(this.pageTitle)} by completing the below form, or edit an existing ${toPretty(this.pageTitle)} by clicking on the ${toPretty(this.pageTitle)}'s name.`;
         }else {
@@ -76,9 +77,9 @@ app.get('/entity/:ent', (req, res, next) => {
     let entity = req.params.ent.toLowerCase();
 
     // skip to 404 if invalid entity
-    if (!entitiesList.includes(entity)) return next();
+    if (!Object.keys(entitiesList).includes(entity)) return next();
 
-    let entityName = capFirst(entity);
+    let entityName = entitiesList[entity];
     console.log(req.query);
     let searchTerms = Object.keys(req.query).map((key) => ({field: key, value: req.query[key]}));
     let responseContext = new contextBlock(entity);
@@ -113,15 +114,15 @@ POST REPLIES
 // Universal post route for processing database queries
 app.post('/database/:ent', (req,res,next) => {
     // print full request for debugging
-    console.log(`Database request received ${JSON.stringify(req.body)}`);
+    console.log(`Database request received for ${req.params.ent}: ${JSON.stringify(req.body)}`);
     
     let entity = req.params.ent.toLowerCase();
 
     // skip to 404 if invalid entity
-    if (!entitiesList.includes(entity)) return next();
+    if (!Object.keys(entitiesList).includes(entity)) return next();
     
     // collect data from request
-    let entityName = capFirst(entity);
+    let entityName = entitiesList[entity];
     let command = req.body.command;
     let data = req.body.data;
 
@@ -149,13 +150,15 @@ app.post('/database/:ent', (req,res,next) => {
             validateFields(entityName, data.updateTerms, res)
             .then((valid) => {
                 if (!valid) return next(new codedError('Invalid field',403));
-
-                validateId(entityName, data.id, res)
+                
+                validateId(entityName, data, res)
                 .then((valid) => {
                     if (!valid) next(new codedError('ID does not exist',403));
                     
                     let updateStr = data.updateTerms.map((term) => (`${term.field}=?`)).join(', ');
-                    queryPromise(`UPDATE ?? SET ${updateStr} WHERE id=?`, [entityName,...data.updateTerms.map((term) => (term.value)),id])
+                    let argsArr = pkHandler(entityName,data); //FIX PLS
+                    let searchStr = argsArr.pop();
+                    queryPromise(`UPDATE ?? SET ${updateStr} ${searchStr}`, [entityName,...data.updateTerms.map((term) => (term.value)),...argsArr])
                     .catch((err) => errorHandler(err,res,500))
                     .then((rows) => {
                         res.status(200).send('Insert successful');
@@ -165,11 +168,13 @@ app.post('/database/:ent', (req,res,next) => {
             break;
             
         case 'DELETE':
-            validateId(entityName, data.id, res)
+            validateId(entityName, data, res)
             .then((valid) => {
                 if (!valid) return next(new codedError('ID does not exist',403));
 
-                queryPromise('DELETE FROM ?? WHERE id=?', [entityName,data.id])
+                let argsArr = pkHandler(data);
+                let searchStr = argsArr.pop();
+                queryPromise(`DELETE FROM ?? ${searchStr}`, [entityName,...argsArr])
                 .catch((err) => errorHandler(err,res,500))
                 .then((rows) => {
                     res.status(200).send('Insert successful');

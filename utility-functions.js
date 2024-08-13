@@ -16,8 +16,18 @@ const fs = require('fs');
 const path = require('path');
 var { queryPromise } = require('./db-functions')  // Import the database connector
 
-// get list of current entity pages
-const entitiesList = fs.readdirSync(path.join(__dirname,'views','entities')).map((name) => (name.replace(".handlebars","")));
+// toLower name to proper EntityName dictionary
+const entitiesList = {
+    abilities: 'Abilities',
+    categories: 'Categories',
+    moves: 'Moves',
+    pokemon: 'Pokemon',
+    pokemonabilities: 'PokemonAbilities',
+    pokemonmoves: 'PokemonMoves',
+    pokemontypes: 'PokemonTypes',
+    ranges: 'Ranges',
+    types: 'Types'
+}
 
 // foreign key to table name dictionary
 const foreignKeyTable = {
@@ -28,6 +38,11 @@ const foreignKeyTable = {
     rangeId: 'Ranges',
     moveId: 'Moves'
 };
+
+// function to reverse search foreignKeyTable
+function getForeignKey(table) {
+    return Object.keys(foreignKeyTable).find((fk) => (foreignKeyTable[fk] === table));
+}
 
 // custom error class, pulled from an old personal project
 class codedError extends Error {
@@ -48,6 +63,10 @@ function capFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+const intersectionTables = {
+    Pokemon: ['PokemonAbilities','PokemonMoves','PokemonTypes']
+}
+
 // string manipulation helper function, citation at top of file
 function toPretty(name) {
     let prettyName;
@@ -63,13 +82,54 @@ function toPretty(name) {
     return capFirst(prettyName);
 };
 
+async function getDropdownData(fields, responseContext, res) {
+    let dropdownContext = responseContext.dropdownContext;
+    if (!dropdownContext) dropdownContext = {};
+
+    for (let key of fields) {
+        if (!Object.keys(foreignKeyTable).includes(key) && key !== "id") continue;
+
+        await queryPromise('SELECT id, name FROM ??', [foreignKeyTable[key] || entitiesList[responseContext.entityName]])
+        .catch((err) => errorHandler(res,err,500))
+        .then((rows) => {
+            dropdownContext[key] = {
+                key: key,
+                prettyKey: toPretty(key === 'id' ? responseContext.entityName : key),
+                entries: rows.map((row) => ({id: row.id, name: row.name}))
+            };
+        });
+    }
+
+    return dropdownContext;
+}
+
 // Make SELECT results human-readable
 async function prettyTable(responseContext, rows, res) {
+    // if table is empty, skip
+    if (!(rows?.length > 0)) return responseContext;
+
+    // make list of attributes
+    responseContext.pageContext.columns = Object.keys(rows[0]).map((column) => (toPretty(column)));
+
+    // get data for dynamic dropdowns
+    responseContext.dropdownContext = await getDropdownData(Object.keys(rows[0]),responseContext,res);
+
+    // add intersection table columns and dropdown data
+    let entityName = entitiesList[responseContext.entityName];
+    for (let intersectionEntity of (intersectionTables[entityName] || [])) {
+        responseContext.pageContext.columns.push(intersectionEntity.replace(entityName,''));
+
+        // get data for dynamic dropdowns
+        await queryPromise('SELECT * FROM ?? LIMIT 1', [intersectionEntity])
+        .catch((err) => errorHandler(res,err,500))
+        .then((rows) => getDropdownData(Object.keys(rows[0]),responseContext,res))
+        .then((dropdownContext) => {
+            responseContext.dropdownContext = dropdownContext;
+        });
+    }
+
     // iterate through rows returned
     for (let row of rows) {
-        // make list of attributes
-        responseContext.pageContext.columns = Object.keys(row).map((column) => (toPretty(column)));
-
         let entry = {}
 
         // add attributes to entry
@@ -82,13 +142,39 @@ async function prettyTable(responseContext, rows, res) {
                 await queryPromise('SELECT name FROM ?? WHERE id=?', [foreignKeyTable[key], row[key]])
                 .catch((err) => errorHandler(res,err,500))
                 .then((fkNames) => {
-                    value = fkNames[0].name; 
+                    if (fkNames.length > 0) {
+                        value = fkNames[0].name;
+                    }else {
+                        value = 'NULL';
+                    }
                 });
             }else {
                 value = row[key];
             }
 
             entry[key] = value;
+        }
+
+        // add intersection table links
+        for (let intersectionEntity of (intersectionTables[entityName] || [])) {
+            // get all arguments for complex SELECT JOIN query
+            let otherEntity = intersectionEntity.replace(entityName,'');
+            let argsArr = [
+                intersectionEntity,
+                otherEntity,
+                intersectionEntity,
+                getForeignKey(otherEntity),
+                otherEntity,
+                intersectionEntity,
+                getForeignKey(entityName),
+                entry.id
+            ];
+
+            await queryPromise('SELECT name FROM ?? JOIN ?? ON ??.?? = ??.id WHERE ??.?? = ?',argsArr)
+            .catch((err) => errorHandler(res,err,500))
+            .then((rows) => {
+                entry[intersectionEntity] = rows.map((row) => (row.name)).join(', ');
+            });
         }
 
         // add entry to table array
@@ -113,14 +199,32 @@ async function validateFields(entityName, dataTerms, res) {
     return valid;
 }
 
+// handler for both normal and composite primary keys
+function pkHandler(data) {
+    let argsArr = [];
+
+    if (!data.id) {
+        data.compositeId.forEach((term) => argsArr.push(term.value));
+    }else {
+        argsArr.push(data.id);
+    }
+    
+    argsArr.push(`WHERE ${data.id ? `id=?` : data.compositeId.map((term) => (`${term.field}=?`)).join(" AND ")}`);
+    
+    return argsArr;
+}
+
 // Validate that id sent by client exists in the table
-async function validateId(entityName, id, res) {
+async function validateId(entityName, data, res) {
     let valid = false;
 
-    await queryPromise('SELECT id FROM ??',[entityName])
-    .catch((err) => errorHandler(err,res,500))
+    let argsArr = pkHandler(data);
+    let searchStr = argsArr.pop();
+
+    await queryPromise(`SELECT * FROM ?? ${searchStr}`,[entityName,...argsArr])
+    .catch((err) => errorHandler(res,err,500))
     .then((rows) => {
-        if (rows.map((row) => (row.id)).includes(id)) valid = true;
+        if (rows?.length > 0) valid = true;
     });
 
     return valid;
@@ -136,5 +240,6 @@ module.exports = {
     toPretty,
     prettyTable,
     validateFields,
+    pkHandler,
     validateId
 };

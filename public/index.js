@@ -22,7 +22,7 @@ async function Query(e, formElem) {
 	e.preventDefault();
 	let formData = new FormData(formElem);
 	console.log(formData);
-	let entity = document.getElementById('HeroSection').dataset.entity;
+	let entity = formElem.dataset.mn || document.getElementById('HeroSection').dataset.entity;
 	let command = formElem.dataset.command;
 	
 	let data = {};
@@ -60,7 +60,15 @@ async function Query(e, formElem) {
 			break;
 
 		case 'DELETE':
-			data.id = formData.id;
+			if (!formData.id) {
+				data.compositeId = [];
+				for (let [key, value] of formData) {
+					if (value === '') continue;
+					data.compositeId.push({field: key, value: value});
+				};
+			}else {
+				data.id = formData.id;
+			}
 			break;
 	}
 
