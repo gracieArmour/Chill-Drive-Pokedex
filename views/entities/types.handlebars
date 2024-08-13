@@ -43,14 +43,7 @@
   <fieldset>
     <legend>Update Type</legend>
 
-    <div class="form-group">
-      <input
-        id="id"
-        name="id"
-        type="text"
-        placeholder="Type ID"
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.id}}
 
     <div class="form-group">
       <input
@@ -71,7 +64,7 @@
   <fieldset>
     <legend>Delete Type</legend>
 
-    {{> dynamicDropdown dropdownContext.typeId}}
+    {{> dynamicDropdown dropdownContext.id}}
 
     <br />
     <button type="submit">Delete Type</button>

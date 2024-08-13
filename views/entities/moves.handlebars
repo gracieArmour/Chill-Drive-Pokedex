@@ -131,33 +131,9 @@
         required
       />
     </div>
-    <div class="form-group">
-      <input
-        id="typeid"
-        name="typeid"
-        type="text"
-        placeholder="Type ID"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        id="categoryid"
-        name="categoryid"
-        type="text"
-        placeholder="Category ID"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <input
-        id="rangeid"
-        name="rangeid"
-        type="text"
-        placeholder="Range ID"
-        required
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.typeId}}
+    {{> dynamicDropdown dropdownContext.categoryId}}
+    {{> dynamicDropdown dropdownContext.rangeId}}
     <div class="form-group">
       <input
         id="pp"
@@ -195,6 +171,16 @@
       />
     </div>
     <br />
+    <!-- Text input-->
+    <div class="form-group">
+      <label for="isContact">Contact?</label>
+      <input
+        id="isContact"
+        name="isContact"
+        type="checkbox"
+        value="1"
+      />
+    </div>
     <button type="submit">Add Move</button>
   </fieldset>
 </form>
@@ -203,14 +189,7 @@
 <form id="update-form" class="form-horizontal" data-command="UPDATE">
   <fieldset>
     <legend>Update Move</legend>
-    <div class="form-group">
-      <input
-        id="id"
-        name="id"
-        type="text"
-        placeholder="Move ID"
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.id}}
     <div class="form-group">
       <input
         id="name"
@@ -227,30 +206,9 @@
         placeholder="Move Description"
       />
     </div>
-    <div class="form-group">
-      <input
-        id="typeid"
-        name="typeid"
-        type="text"
-        placeholder="Type ID"
-      />
-    </div>
-    <div class="form-group">
-      <input
-        id="categoryid"
-        name="categoryid"
-        type="text"
-        placeholder="Category ID"
-      />
-    </div>
-    <div class="form-group">
-      <input
-        id="rangeid"
-        name="rangeid"
-        type="text"
-        placeholder="Range ID"
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.typeId}}
+    {{> dynamicDropdown dropdownContext.categoryId}}
+    {{> dynamicDropdown dropdownContext.rangeId}}
     <div class="form-group">
       <input
         id="pp"
@@ -284,6 +242,16 @@
       />
     </div>
     <br />
+    <!-- Text input-->
+    <div class="form-group">
+      <label for="isContact">Contact?</label>
+      <input
+        id="isContact"
+        name="isContact"
+        type="checkbox"
+        value="1"
+      />
+    </div>
     <button type="submit">Update Move</button>
   </fieldset>
 </form>
@@ -292,7 +260,7 @@
 <form id="delete-form" class="form-horizontal" data-command="DELETE">
   <fieldset>
     <legend>Delete Move</legend>
-    {{> dynamicDropdown dropdownContext.moveId}}
+    {{> dynamicDropdown dropdownContext.id}}
     <br />
     <button type="submit">Delete Move</button>
   </fieldset>

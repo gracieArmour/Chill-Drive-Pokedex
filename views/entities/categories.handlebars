@@ -41,14 +41,7 @@
 <form id="update-form" class="form-horizontal" data-command="UPDATE">
   <fieldset>
     <legend>Update Category</legend>
-    <div class="form-group">
-      <input
-        id="id"
-        name="id"
-        type="text"
-        placeholder="Category ID"
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.id}}
     <div class="form-group">
       <input
         id="name"
@@ -66,7 +59,7 @@
 <form id="delete-form" class="form-horizontal" data-command="DELETE">
   <fieldset>
     <legend>Delete Category</legend>
-    {{> dynamicDropdown dropdownContext.categoryId}}
+    {{> dynamicDropdown dropdownContext.id}}
     <br />
     <button type="submit">Delete Category</button>
   </fieldset>

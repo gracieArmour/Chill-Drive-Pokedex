@@ -61,14 +61,7 @@
 <form id="update-form" class="form-horizontal" data-command="UPDATE">
   <fieldset>
     <legend>Update Ability</legend>
-    <div class="form-group">
-      <input
-        id="id"
-        name="id"
-        type="text"
-        placeholder="Ability ID"
-      />
-    </div>
+    {{> dynamicDropdown dropdownContext.id}}
     <div class="form-group">
       <input
         id="name"
