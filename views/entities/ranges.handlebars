@@ -30,3 +30,81 @@
   </fieldset>
 </form>
 
+<!-- Add -->
+<form id="insert-form" class="form-horizontal" data-command="INSERT">
+  <fieldset>
+    <legend>Add New Range</legend>
+
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Range Name"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        id="description"
+        name="description"
+        type="text"
+        placeholder="Range Description"
+        required
+      />
+    </div>
+
+    <br />
+    <button type="submit">Add Range</button>
+  </fieldset>
+</form>
+
+<!-- Update -->
+<form id="update-form" class="form-horizontal" data-command="UPDATE">
+  <fieldset>
+    <legend>Update Range</legend>
+
+    <div class="form-group">
+      <input
+        id="id"
+        name="id"
+        type="text"
+        placeholder="Range ID"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Range Name"
+      />
+    </div>
+
+    <div class="form-group">
+      <input
+        id="description"
+        name="description"
+        type="text"
+        placeholder="Range Description"
+      />
+    </div>
+
+    <br />
+    <button type="submit">Update Range</button>
+  </fieldset>
+</form>
+
+<!-- Delete -->
+<form id="delete-form" class="form-horizontal" data-command="DELETE">
+  <fieldset>
+    <legend>Delete Range</legend>
+
+    {{> dynamicDropdown dropdownContext.rangeId}}
+
+    <br />
+    <button type="submit">Delete Range</button>
+  </fieldset>
+</form>
