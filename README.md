@@ -6,12 +6,12 @@ School project for Introduction to Databases. Pokemon database management websit
 External libraries used can be found in package.json
 
 ### utility-function.js
-**String capitalization helper function (line 47)**<br/>
+**String capitalization helper function (line 62)**<br/>
 Date: 8/3/2024<br/>
 Copied from stackoverflow post<br/>
 URL: https://stackoverflow.com/a/1026087
 
-**Regex replace usage (line 60)**<br/>
+**Regex replace usage (line 79)**<br/>
 Date: 8/5/2024<br/>
 Copied and then modified from stackoverflow post<br/>
 URL: https://stackoverflow.com/a/54246501

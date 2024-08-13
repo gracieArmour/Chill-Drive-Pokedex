@@ -1,12 +1,12 @@
 /*
 CITATIONS
 
-String capitalization helper function (line 47)
+String capitalization helper function (line 62)
 Date: 8/3/2024
 Copied from stackoverflow post
 URL: https://stackoverflow.com/a/1026087
 
-Regex replace usage (line 60)
+Regex replace usage (line 79)
 Date: 8/5/2024
 Copied and then modified from stackoverflow post
 URL: https://stackoverflow.com/a/54246501
