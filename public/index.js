@@ -60,7 +60,7 @@ async function Query(e, formElem) {
 			break;
 
 		case 'DELETE':
-			if (formElem.dataset.mn) {
+			if (!formData.id) {
 				data.compositeId = [];
 				for (let [key, value] of formData) {
 					if (value === '') continue;

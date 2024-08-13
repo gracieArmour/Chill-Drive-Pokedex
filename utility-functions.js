@@ -82,18 +82,19 @@ function toPretty(name) {
     return capFirst(prettyName);
 };
 
-async function getDropdownData(fields, dropdownContext, res) {
+async function getDropdownData(fields, responseContext, res) {
+    let dropdownContext = responseContext.dropdownContext;
     if (!dropdownContext) dropdownContext = {};
 
     for (let key of fields) {
-        if (!Object.keys(foreignKeyTable).includes(key)) continue;
+        if (!Object.keys(foreignKeyTable).includes(key) && key !== "id") continue;
 
-        await queryPromise('SELECT id, name FROM ??', [foreignKeyTable[key]])
+        await queryPromise('SELECT id, name FROM ??', [foreignKeyTable[key] || entitiesList[responseContext.entityName]])
         .catch((err) => errorHandler(res,err,500))
         .then((rows) => {
             dropdownContext[key] = {
                 key: key,
-                prettyKey: toPretty(key),
+                prettyKey: toPretty(key === 'id' ? responseContext.entityName : key),
                 entries: rows.map((row) => ({id: row.id, name: row.name}))
             };
         });
@@ -111,7 +112,7 @@ async function prettyTable(responseContext, rows, res) {
     responseContext.pageContext.columns = Object.keys(rows[0]).map((column) => (toPretty(column)));
 
     // get data for dynamic dropdowns
-    responseContext.dropdownContext = await getDropdownData(Object.keys(rows[0]),responseContext.dropdownContext,res);
+    responseContext.dropdownContext = await getDropdownData(Object.keys(rows[0]),responseContext,res);
 
     // add intersection table columns and dropdown data
     let entityName = entitiesList[responseContext.entityName];
@@ -121,7 +122,7 @@ async function prettyTable(responseContext, rows, res) {
         // get data for dynamic dropdowns
         await queryPromise('SELECT * FROM ?? LIMIT 1', [intersectionEntity])
         .catch((err) => errorHandler(res,err,500))
-        .then((rows) => getDropdownData(Object.keys(rows[0]),responseContext.dropdownContext,res))
+        .then((rows) => getDropdownData(Object.keys(rows[0]),responseContext,res))
         .then((dropdownContext) => {
             responseContext.dropdownContext = dropdownContext;
         });
