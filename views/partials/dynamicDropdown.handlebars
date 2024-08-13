@@ -1,8 +1,8 @@
 <!-- Select Basic -->
 <div class="form-group">
-    <select id="{{entityName}}{{foreignTable.key}}" name="{{entityName}}{{foreignTable.key}}">
-    <option value="" disabled selected>{{foreignTable.prettyKey}}</option>
-    {{#each foreignTable.entries}}
+    <select name="{{key}}">
+    <option value="" disabled selected>{{prettyKey}}</option>
+    {{#each entries}}
         <option value="{{this.id}}">{{this.name}}</option>
     {{/each}}
     </select>
