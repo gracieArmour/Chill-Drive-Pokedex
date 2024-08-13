@@ -19,3 +19,57 @@
   </fieldset>
 </form>
 
+<!-- Add -->
+<form id="insert-form" class="form-horizontal" data-command="INSERT">
+  <fieldset>
+    <legend>Add New Category</legend>
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Category Name"
+        required
+      />
+    </div>
+    <br />
+    <button type="submit">Add Category</button>
+  </fieldset>
+</form>
+
+<!-- Update -->
+<form id="update-form" class="form-horizontal" data-command="UPDATE">
+  <fieldset>
+    <legend>Update Category</legend>
+    <div class="form-group">
+      <input
+        id="id"
+        name="id"
+        type="text"
+        placeholder="Category ID"
+      />
+    </div>
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Category Name"
+      />
+    </div>
+    <br />
+    <button type="submit">Update Category</button>
+  </fieldset>
+</form>
+
+<!-- Delete -->
+<form id="delete-form" class="form-horizontal" data-command="DELETE">
+  <fieldset>
+    <legend>Delete Category</legend>
+    {{> dynamicDropdown dropdownContext.categoryId}}
+    <br />
+    <button type="submit">Delete Category</button>
+  </fieldset>
+</form>
+
+

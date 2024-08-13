@@ -10,7 +10,6 @@
         name="name"
         type="text"
         placeholder="Ability Name"
-        required=""
       />
     </div>
 
@@ -21,12 +20,84 @@
         name="description"
         type="text"
         placeholder="Ability Description"
-        required=""
       />
     </div>
 
     <br />
     <button type="submit">Search</button>
+  </fieldset>
+</form>
+
+<!-- Add -->
+<form id="insert-form" class="form-horizontal" data-command="INSERT">
+  <fieldset>
+    <legend>Add New Ability</legend>
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Ability Name"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <input
+        id="description"
+        name="description"
+        type="text"
+        placeholder="Ability Description"
+        required
+      />
+    </div>
+    <br />
+    <button type="submit">Add Ability</button>
+  </fieldset>
+</form>
+
+
+
+<!-- Update -->
+<form id="update-form" class="form-horizontal" data-command="UPDATE">
+  <fieldset>
+    <legend>Update Ability</legend>
+    <div class="form-group">
+      <input
+        id="id"
+        name="id"
+        type="text"
+        placeholder="Ability ID"
+      />
+    </div>
+    <div class="form-group">
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Ability Name"
+      />
+    </div>
+    <div class="form-group">
+      <input
+        id="description"
+        name="description"
+        type="text"
+        placeholder="Ability Description"
+      />
+    </div>
+    <br />
+    <button type="submit">Update Ability</button>
+  </fieldset>
+</form>
+
+
+<!-- Delete -->
+<form id="delete-form" class="form-horizontal" data-command="DELETE">
+  <fieldset>
+    <legend>Delete Ability</legend>
+    {{> dynamicDropdown dropdownContext.abilityId}}
+    <br />
+    <button type="submit">Delete Ability</button>
   </fieldset>
 </form>
 
