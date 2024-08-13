@@ -10,7 +10,6 @@
         name="pokemonname"
         type="text"
         placeholder="Name"
-        required=""
       />
     </div>
 
@@ -21,7 +20,6 @@
         name="pokemonspecies"
         type="text"
         placeholder="Species"
-        required=""
       />
     </div>
 
@@ -64,7 +62,6 @@
         name="baseHP"
         type="text"
         placeholder="HP"
-        required=""
       />
     </div>
 
@@ -74,7 +71,6 @@
         name="baseAttack"
         type="text"
         placeholder="Attack"
-        required=""
       />
     </div>
 
@@ -84,7 +80,6 @@
         name="baseDefense"
         type="text"
         placeholder="Defense"
-        required=""
       />
     </div>
 
@@ -94,7 +89,6 @@
         name="baseSpAttack"
         type="text"
         placeholder="Sp. Attack"
-        required=""
       />
     </div>
 
@@ -104,7 +98,6 @@
         name="baseSpDefense"
         type="text"
         placeholder="Sp. Defense"
-        required=""
       />
     </div>
 
@@ -114,7 +107,6 @@
         name="baseSpeed"
         type="text"
         placeholder="Speed"
-        required=""
       />
     </div>
 
@@ -125,7 +117,6 @@
         name="pokemonWeight"
         type="text"
         placeholder="Weight"
-        required=""
       />
     </div>
 
@@ -135,7 +126,6 @@
         name="pokemonHeight"
         type="text"
         placeholder="Height"
-        required=""
       />
     </div>
 
@@ -447,7 +437,7 @@
   <fieldset>
     <legend>Delete Pokémon</legend>
 
-    {{> dynamicDropdown dropdownContext.pokemonId}}
+    {{> dynamicDropdown dropdownContext.id}}
 
     <br />
     <button type="submit">Delete Pokémon</button>
@@ -455,30 +445,33 @@
 </form>
 
 <!-- Delete Entry from Intersection Table -->
-<form id="delete-intersection-form" class="form-horizontal" data-command="DELETE" data-mn="IntersectionTableName">
+<form id="delete-move-form" class="form-horizontal" data-command="DELETE" data-mn="PokemonMoves">
   <fieldset>
     <legend>Delete Entry</legend>
-    <div class="form-group">
-      {{> dynamicDropdown dropdownContext.intersectionId}}
-    </div>
+    {{> dynamicDropdown dropdownContext.pokemonId}}
+    {{> dynamicDropdown dropdownContext.moveId}}
     <br />
     <button type="submit">Delete Entry</button>
   </fieldset>
 </form>
 
 <!-- Update Entry in Intersection Table -->
-<form id="update-intersection-form" class="form-horizontal" data-command="UPDATE" data-mn="IntersectionTableName">
+<form id="update-moves-form" class="form-horizontal" data-command="UPDATE" data-mn="PokemonMoves">
   <fieldset>
     <legend>Update Entry</legend>
     <div class="form-group">
       {{> dynamicDropdown dropdownContext.pokemonId}}
     </div>
     <div class="form-group">
-      {{> dynamicDropdown dropdownContext.foreignKeyId}}
+      {{> dynamicDropdown dropdownContext.moveId}}
     </div>
     <div class="form-group">
-      <label for="additional-attribute">Additional Attribute:</label>
-      <input type="text" name="additional-attribute" placeholder="Enter value" />
+      <input
+        id="level"
+        name="level"
+        type="text"
+        placeholder="Level"
+      />
     </div>
     <br />
     <button type="submit">Update Entry</button>
@@ -495,6 +488,14 @@
     <div class="form-group">
       {{> dynamicDropdown dropdownContext.abilityId}}
     </div>
+    <div class="form-group">
+      <label for="isHidden">Hidden?</label>
+      <input
+        id="isHidden"
+        name="isHidden"
+        type="checkbox"
+      />
+    </div>
     <br />
     <button type="submit">Add Ability</button>
   </fieldset>
@@ -509,6 +510,14 @@
     </div>
     <div class="form-group">
       {{> dynamicDropdown dropdownContext.moveId}}
+    </div>
+    <div class="form-group">
+      <input
+        id="level"
+        name="level"
+        type="text"
+        placeholder="Level"
+      />
     </div>
     <br />
     <button type="submit">Add Move</button>
