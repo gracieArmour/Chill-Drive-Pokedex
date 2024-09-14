@@ -204,7 +204,7 @@ function pkHandler(data) {
     let argsArr = [];
 
     if (!data.id) {
-        data.compositeId.forEach((term) => argsArr.push(term.value));
+        if (data.compositeId) data.compositeId.forEach((term) => argsArr.push(term.value));
     }else {
         argsArr.push(data.id);
     }
